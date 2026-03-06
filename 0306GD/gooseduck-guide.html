@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鹅鸭杀 · 角色攻略</title>
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=Noto+Sans+SC:wght@300;400;500;700&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --goose: #F5C842;
+    --goose-dim: #7a6218;
+    --goose-bg: rgba(245,200,66,0.08);
+    --duck: #E8453C;
+    --duck-dim: #7a1f1a;
+    --duck-bg: rgba(232,69,60,0.08);
+    --neutral: #A855F7;
+    --neutral-dim: #5b2d80;
+    --neutral-bg: rgba(168,85,247,0.08);
+    --bg: #0f0f14;
+    --surface: #17171f;
+    --surface2: #1e1e28;
+    --border: rgba(255,255,255,0.06);
+    --text: #e8e8f0;
+    --text-dim: #7a7a99;
+    --glow: 0 0 30px rgba(245,200,66,0.2);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans SC', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(245,200,66,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 80% 90%, rgba(232,69,60,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 50% 50%, rgba(168,85,247,0.02) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 60px 20px 40px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+
+  .logo-icon {
+    font-size: 48px;
+    animation: waddle 3s ease-in-out infinite;
+    display: inline-block;
+    filter: drop-shadow(0 0 12px rgba(245,200,66,0.5));
+  }
+
+  @keyframes waddle {
+    0%,100% { transform: rotate(-8deg); }
+    50% { transform: rotate(8deg); }
+  }
+
+  h1 {
+    font-family: 'ZCOOL XiaoWei', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    background: linear-gradient(135deg, #F5C842 0%, #ff9a3c 50%, #E8453C 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 4px;
+    text-shadow: none;
+    filter: drop-shadow(0 2px 20px rgba(245,200,66,0.3));
+  }
+
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    margin-top: 8px;
+    font-weight: 300;
+  }
+
+  /* ── FILTER TABS ── */
+  .filter-bar {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 30px 20px 20px;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 8px 22px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-family: 'Noto Sans SC', sans-serif;
+    letter-spacing: 1px;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .filter-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.25s;
+    border-radius: 50px;
+  }
+
+  .filter-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.15); }
+
+  .filter-btn.active[data-faction="all"] { background: linear-gradient(135deg,#F5C842,#E8453C); color: #0f0f14; border-color: transparent; font-weight: 700; }
+  .filter-btn.active[data-faction="goose"] { background: var(--goose); color: #0f0f14; border-color: transparent; font-weight: 700; }
+  .filter-btn.active[data-faction="duck"] { background: var(--duck); color: #fff; border-color: transparent; font-weight: 700; }
+  .filter-btn.active[data-faction="neutral"] { background: var(--neutral); color: #fff; border-color: transparent; font-weight: 700; }
+
+  /* ── SEARCH ── */
+  .search-wrap {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    padding: 0 20px 30px;
+  }
+
+  .search-input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 20px 10px 44px;
+    border-radius: 50px;
+    width: 100%;
+    max-width: 360px;
+    font-size: 0.9rem;
+    font-family: 'Noto Sans SC', sans-serif;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .search-input:focus {
+    border-color: rgba(245,200,66,0.4);
+    box-shadow: 0 0 0 3px rgba(245,200,66,0.08);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: calc(50% - 180px + 14px);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+    font-size: 16px;
+    pointer-events: none;
+  }
+
+  /* ── GRID ── */
+  .grid-section {
+    position: relative;
+    z-index: 5;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  .section-label {
+    font-size: 0.7rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    padding-left: 4px;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+    margin-bottom: 40px;
+  }
+
+  /* ── CHARACTER CARD ── */
+  .char-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 16px 18px;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .char-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 14px 14px 0 0;
+  }
+
+  .char-card.goose::before { background: linear-gradient(90deg, var(--goose), transparent); }
+  .char-card.duck::before  { background: linear-gradient(90deg, var(--duck), transparent); }
+  .char-card.neutral::before { background: linear-gradient(90deg, var(--neutral), transparent); }
+
+  .char-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255,255,255,0.14);
+  }
+
+  .char-card.goose:hover  { box-shadow: 0 8px 30px rgba(245,200,66,0.15); border-color: rgba(245,200,66,0.3); }
+  .char-card.duck:hover   { box-shadow: 0 8px 30px rgba(232,69,60,0.15); border-color: rgba(232,69,60,0.3); }
+  .char-card.neutral:hover{ box-shadow: 0 8px 30px rgba(168,85,247,0.15); border-color: rgba(168,85,247,0.3); }
+
+  .card-emoji {
+    font-size: 36px;
+    display: block;
+    margin-bottom: 12px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+  }
+
+  .card-name {
+    font-family: 'ZCOOL XiaoWei', serif;
+    font-size: 1.05rem;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+
+  .card-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    padding: 2px 10px;
+    border-radius: 50px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
+  .goose .card-tag { background: var(--goose-bg); color: var(--goose); border: 1px solid rgba(245,200,66,0.25); }
+  .duck  .card-tag { background: var(--duck-bg);  color: var(--duck);  border: 1px solid rgba(232,69,60,0.25); }
+  .neutral .card-tag { background: var(--neutral-bg); color: var(--neutral); border: 1px solid rgba(168,85,247,0.25); }
+
+  .card-role {
+    font-size: 0.76rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* hidden */
+  .char-card.hidden { display: none; }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform: translateY(16px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(8,8,12,0.88);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 20px;
+    overflow-y: auto;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 720px;
+    margin: auto;
+    position: relative;
+    transform: scale(0.95) translateY(20px);
+    transition: transform 0.3s;
+    overflow: hidden;
+  }
+
+  .modal-overlay.open .modal {
+    transform: scale(1) translateY(0);
+  }
+
+  .modal-header {
+    padding: 32px 32px 24px;
+    position: relative;
+  }
+
+  .modal-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 32px; right: 32px;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .modal-faction-bar {
+    height: 4px;
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .modal.goose .modal-faction-bar  { background: linear-gradient(90deg, var(--goose), transparent 70%); }
+  .modal.duck  .modal-faction-bar  { background: linear-gradient(90deg, var(--duck), transparent 70%); }
+  .modal.neutral .modal-faction-bar{ background: linear-gradient(90deg, var(--neutral), transparent 70%); }
+
+  .modal-close {
+    position: absolute;
+    top: 20px; right: 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .modal-close:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+
+  .modal-title-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .modal-emoji { font-size: 52px; line-height: 1; }
+
+  .modal-name {
+    font-family: 'ZCOOL XiaoWei', serif;
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+
+  .modal-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .modal-tag {
+    font-size: 0.72rem;
+    padding: 3px 12px;
+    border-radius: 50px;
+    letter-spacing: 1px;
+    font-weight: 500;
+  }
+
+  .modal.goose  .modal-tag.faction { background: var(--goose-bg); color: var(--goose); border: 1px solid rgba(245,200,66,0.3); }
+  .modal.duck   .modal-tag.faction { background: var(--duck-bg);  color: var(--duck);  border: 1px solid rgba(232,69,60,0.3); }
+  .modal.neutral.modal-tag.faction,
+  .modal.neutral .modal-tag.faction{ background: var(--neutral-bg); color: var(--neutral); border: 1px solid rgba(168,85,247,0.3); }
+
+  .modal-tag.win { background: rgba(52,211,153,0.1); color: #34d399; border: 1px solid rgba(52,211,153,0.25); }
+
+  .modal-body {
+    padding: 28px 32px 36px;
+    display: grid;
+    gap: 20px;
+  }
+
+  .section {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+
+  .section-title {
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .modal.goose  .dot { background: var(--goose); }
+  .modal.duck   .dot { background: var(--duck); }
+  .modal.neutral .dot { background: var(--neutral); }
+
+  .skill-block {
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border-left: 3px solid transparent;
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+
+  .modal.goose  .skill-block { border-left-color: var(--goose); }
+  .modal.duck   .skill-block { border-left-color: var(--duck); }
+  .modal.neutral .skill-block { border-left-color: var(--neutral); }
+
+  .skill-label {
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+
+  .tip-list {
+    list-style: none;
+    display: grid;
+    gap: 8px;
+  }
+
+  .tip-list li {
+    display: flex;
+    gap: 10px;
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+
+  .tip-list li::before {
+    content: '›';
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    margin-top: -1px;
+  }
+
+  .modal.goose  .tip-list li::before { color: var(--goose); }
+  .modal.duck   .tip-list li::before { color: var(--duck); }
+  .modal.neutral .tip-list li::before { color: var(--neutral); }
+
+  .avoid-list li::before { content: '✕'; font-size: 0.8rem; color: var(--duck) !important; }
+
+  .quote-box {
+    background: rgba(0,0,0,0.25);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: var(--text-dim);
+    font-style: italic;
+    border: 1px dashed rgba(255,255,255,0.08);
+  }
+
+  .quote-box::before { content: '"'; font-size: 1.4rem; vertical-align: -0.2em; opacity: 0.4; margin-right: 4px; }
+  .quote-box::after  { content: '"'; font-size: 1.4rem; vertical-align: -0.2em; opacity: 0.4; margin-left: 2px; }
+
+  .relation-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .relation-item {
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+
+  .rel-title { font-size: 0.68rem; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 4px; }
+
+  /* ── STATS BAR ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .stat-box {
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+
+  .stat-val {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.3rem;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .modal.goose  .stat-val { color: var(--goose); }
+  .modal.duck   .stat-val { color: var(--duck); }
+  .modal.neutral .stat-val { color: var(--neutral); }
+
+  .stat-name { font-size: 0.68rem; color: var(--text-dim); letter-spacing: 1px; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-dim);
+    display: none;
+  }
+
+  .empty-state.show { display: block; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .modal-body { padding: 20px 18px 28px; }
+    .modal-header { padding: 28px 18px 20px; }
+    .modal-name { font-size: 1.4rem; }
+    .relation-grid { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .search-icon { left: calc(50% - 50vw + 34px); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-wrap">
+    <span class="logo-icon">🪿</span>
+    <h1>鹅鸭杀</h1>
+    <span class="logo-icon" style="animation-delay:0.5s; font-size:36px">🦆</span>
+  </div>
+  <p class="subtitle">角色攻略 · Goose Goose Duck Guide</p>
+</header>
+
+<div class="filter-bar">
+  <button class="filter-btn active" data-faction="all">全部角色</button>
+  <button class="filter-btn" data-faction="goose">🪿 鹅阵营</button>
+  <button class="filter-btn" data-faction="duck">🦆 鸭阵营</button>
+  <button class="filter-btn" data-faction="neutral">🐦 中立阵营</button>
+</div>
+
+<div class="search-wrap">
+  <span class="search-icon">🔍</span>
+  <input type="text" class="search-input" placeholder="搜索角色名称…" id="searchInput">
+</div>
+
+<div class="grid-section" id="gridSection">
+  <div class="empty-state" id="emptyState">没有找到匹配的角色 🪿</div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOnOverlay(event)">
+  <div class="modal" id="modal">
+    <div class="modal-faction-bar"></div>
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-header" id="modalHeader"></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+const CHARS = [
+  // ── 鹅阵营 ──
+  {
+    id:'goose_basic', name:'大白鹅', faction:'goose', factionLabel:'鹅阵营', emoji:'🪿',
+    role:'基础鹅 · 任务担当',
+    win:'与鹅阵营共同获胜（完成任务 / 票出所有鸭）',
+    skill:'无主动技能；被刺客或大祭司会议狙杀时免疫',
+    cooldown:'无技能冷却',
+    mobile:'全程点击任务图标做任务；点击地图图标查看位置与路线',
+    core:[
+      '带队完成任务是首要目标，任务进度越快鹅阵营越占优',
+      '全程抱团是最佳保命手段，2人以上同行大幅降低被刀风险',
+      '报路线、控票，帮助侦探/警长锁定嫌疑人',
+    ],
+    advanced:[
+      '踩尸前先说出具体位置，避免自己变成嫌疑人',
+      '会议时主动问单走玩家的路线，逼嫌疑人自证清白',
+      '任务进度领先时，抱团即可；落后时需主动拉铃催票',
+    ],
+    avoid:['切忌单走，单走=当靶子','不要乱踩其他玩家（容易被误刀）','划水不做任务会拖垮整队'],
+    speech:'我全程在 XX 做任务，和 XX 一起；单走的 XX 快报路线',
+    synergy:'与警长、侦探相互提供情报；肉汁抱团走可两人都安全',
+    counter:'刺客、大祭司无法狙杀本角色（免疫）',
+    stats:{难度:'★☆☆', 攻击性:'无', 信息量:'中'},
+  },
+  {
+    id:'sheriff', name:'警长', faction:'goose', factionLabel:'鹅阵营', emoji:'🔫',
+    role:'执法者 · 主动抓狼',
+    win:'与鹅阵营共同获胜',
+    skill:'可无限次刀人；刀鹅则自己也死，刀鸭/中立无惩罚',
+    cooldown:'开局17秒；拉铃后20秒',
+    mobile:'右侧刀人图标出刀；长按图标可预瞄后出刀',
+    core:[
+      '只刀确定的嫌疑人：单走者、被侦探锁定者、会议被多人踩者',
+      '出刀前必须先报身份，防止被队友误判为鸭',
+      '若刀了鸭子，立刻说明结果，主动引导票型',
+    ],
+    advanced:[
+      '面刀技巧：贴近目标预瞄，让目标无法跑路后立即出刀',
+      '守管道口等尸体，锁定尸体旁边的人',
+      '残局（3-4人）大胆出刀缩小局势',
+    ],
+    avoid:['绝对不刀加拿大鹅（双方同死且不报警）','不刀网红（警长自己也死，且全鹅收警报乱场）','冲动刀好人会导致自己死亡'],
+    speech:'我警长，确认 XX 是狼，已出刀；请继续盯单走者',
+    synergy:'与侦探联动：侦探查到恶魔标后通知警长出刀效率最高',
+    counter:'被刺客/大祭司狙杀时按身份判定；与加拿大鹅/网红同行需注意',
+    stats:{难度:'★★☆', 攻击性:'高', 信息量:'中'},
+  },
+  {
+    id:'justicar', name:'正义使者', faction:'goose', factionLabel:'鹅阵营', emoji:'⚖️',
+    role:'终极底牌 · 全局唯一无惩罚刀',
+    win:'与鹅阵营共同获胜',
+    skill:'全局仅1次刀人机会，无论刀鹅/鸭/中立均无惩罚（不死）',
+    cooldown:'单次使用，用完图标消失',
+    mobile:'点击刀人图标使用；使用后图标消失',
+    core:[
+      '留刀到中后期，刀最危险的特殊角色（专业杀手/变形者/鹈鹕/猎鹰）',
+      '刀后立刻在会议/频道报身份和目标，引导队友信任',
+      '不要轻易暴露身份，否则会被刺客/大祭司优先狙',
+    ],
+    advanced:[
+      '残局刀下最后一只鸭可直接锁胜，是逆转神牌',
+      '听发言判断身份，刀发言漏洞大的人',
+      '别刀警长（两人双死），别浪费在普通鸭上',
+    ],
+    avoid:['前期绝对不能乱刀，浪费唯一刀机','不刀警长（双方同死）','暴露太早被刺客狙杀'],
+    speech:'我正义使者，留刀应急；残局如有明狼或专杀我来收',
+    synergy:'配合侦探情报精准出刀；可替警长处理加拿大鹅/网红旁的嫌疑人',
+    counter:'免疫正义使者自身刀的副作用；唯一弱点是信息不足时浪费刀',
+    stats:{难度:'★★☆', 攻击性:'中', 信息量:'低'},
+  },
+  {
+    id:'canada_goose', name:'加拿大鹅', faction:'goose', factionLabel:'鹅阵营', emoji:'🍁',
+    role:'报警陷阱 · 专杀克星',
+    win:'与鹅阵营共同获胜',
+    skill:'被普通鸭刀后1秒自动拉铃报警；专业杀手刀不触发报警',
+    cooldown:'被动触发，无冷却',
+    mobile:'开局主动向2人报身份；故意单走引诱鸭来刀',
+    core:[
+      '策略核心：用自身作诱饵逼普通鸭暴露',
+      '被刀后自动报警，会议就能锁定刀自己的人',
+      '若被刀但没报警，说明刀自己的是专业杀手，立刻开盘专杀',
+    ],
+    advanced:[
+      '单走路线要故意走冷僻区域，让鸭更容易下手',
+      '没报警时，冷静推理专业杀手：谁跟踪你/谁在你附近',
+      '配合追踪者使用：追踪者盯着加拿大鹅，被吞/被专杀时立刻获取目标方向',
+    ],
+    avoid:['不与警长单走（双方同死且不报警）','不与网红同行（网红死会全场警报，容易混淆报警信息）','警惕鹈鹕吞，吞走不触发报警'],
+    speech:'我加拿大鹅，单走引狼；没报警说明是专业杀手，大家帮我盘附近跑的人',
+    synergy:'追踪者追踪加拿大鹅效果极佳；侦探可验证嫌疑人',
+    counter:'专业杀手是天敌（刀人无报警）；鹈鹕吞走同样不触发',
+    stats:{难度:'★★☆', 攻击性:'无', 信息量:'高'},
+  },
+  {
+    id:'detective', name:'侦探', faction:'goose', factionLabel:'鹅阵营', emoji:'🔎',
+    role:'情报核心 · 每轮验人',
+    win:'与鹅阵营共同获胜',
+    skill:'每回合查验1人，显示"恶魔"（本回合动过刀）或"鹅头"（未动刀）',
+    cooldown:'每回合1次，会议后重置',
+    mobile:'点击侦探图标，再点击目标玩家查验',
+    core:[
+      '优先查单走者和面刀嫌疑人，情报价值最高',
+      '查完立刻记录结果，会议时直接报铁证引导投票',
+      '"恶魔"标 = 本回合动刀，不一定是杀手（可能是警长/正义），需结合情境判断',
+    ],
+    advanced:[
+      '不要暴露太早，被狙后情报线断裂',
+      '可故意查警长确认其身份，为队友建立信任链',
+      '查到恶魔标时，立刻确认当轮是否有尸体，无尸体 = 专业杀手可能',
+    ],
+    avoid:['不要查尸体或自己（无效消耗）','暴露身份太早会被刺客优先狙杀','不要轻易相信发言，以查验结果为准'],
+    speech:'我侦探，查 XX 显示恶魔标，他本回合动刀，结合路线可以票他',
+    synergy:'与警长联动效果最佳：侦探查到恶魔标立刻通知警长出刀',
+    counter:'刺客/大祭司的优先狙杀目标，需注意保护自己',
+    stats:{难度:'★★☆', 攻击性:'无', 信息量:'极高'},
+  },
+  {
+    id:'psychic', name:'通灵者', faction:'goose', factionLabel:'鹅阵营', emoji:'🔮',
+    role:'死亡追踪 · 节奏感知',
+    win:'与鹅阵营共同获胜',
+    skill:'随时可查看当前场上死亡总数（幽灵数）；鹈鹕吞人不算死亡',
+    cooldown:'开局20秒，用后10秒，拉铃后20秒',
+    mobile:'点击通灵图标查看；每隔一段时间报一次死亡数',
+    core:[
+      '报死亡节奏：短时间内死亡数突增 = 狼连刀，需立刻拉铃',
+      '有人失踪但死亡数不变 = 极可能被鹈鹕吞走',
+      '死亡数与实际人数对比，发现异常立刻报告',
+    ],
+    advanced:[
+      '连续查验可监控死亡速率，判断鸭队当前激进程度',
+      '配合追踪者使用：追踪者盯鹈鹕，通灵者监控人头数',
+    ],
+    avoid:['不要把鹈鹕吞人误算为死亡（会导致数字不对）','不要漏报关键节点的死亡数'],
+    speech:'我通灵者，当前死亡 X 人；XX 失踪且死亡数没变，怀疑被鹈鹕吞了',
+    synergy:'与追踪者配合可精准锁定鹈鹕位置',
+    counter:'鹈鹕吞人是主要盲区，需要借助其他情报补充',
+    stats:{难度:'★☆☆', 攻击性:'无', 信息量:'高'},
+  },
+  {
+    id:'bird_watcher', name:'观鸟者', faction:'goose', factionLabel:'鹅阵营', emoji:'🦉',
+    role:'远程侦察 · 穿墙眼线',
+    win:'与鹅阵营共同获胜',
+    skill:'可穿墙观察（窄扇形视野）；关灯时失效',
+    cooldown:'切换冷却5秒，可频繁使用',
+    mobile:'点击观鸟图标开启穿墙视野；选择墙角/柱子后隐藏本体',
+    core:[
+      '远距离监视任务点、管道口、关灯区域',
+      '看到刀人立刻记录位置和凶手外观，会议报出',
+      '本体躲墙角，降低被刀风险',
+    ],
+    advanced:[
+      '守管道口可观察鸭的行动路线',
+      '关灯时先找安全地点躲避，等灯亮再切换视野',
+    ],
+    avoid:['不要站在空旷区域开技能（视野小、本体容易被刀）','不要长时间开启观鸟视野（无法感知本体周围危险）'],
+    speech:'我观鸟者，在 XX 位置看到 XX 对 XX 出刀，确认是鸭',
+    synergy:'与侦探情报形成双重验证；发现刀人立刻通知警长出刀',
+    counter:'关灯是最大克制，需提前找好位置',
+    stats:{难度:'★★☆', 攻击性:'无', 信息量:'极高'},
+  },
+  {
+    id:'mortician', name:'殡仪员', faction:'goose', factionLabel:'鹅阵营', emoji:'⚰️',
+    role:'验尸官 · 身份确认',
+    win:'与鹅阵营共同获胜',
+    skill:'靠近尸体并查验，可获知死者的角色身份',
+    cooldown:'无',
+    mobile:'走到尸体旁，点击殡仪员图标查验',
+    core:[
+      '第一时间摸尸，优先摸特殊角色（加拿大鹅/网红/侦探/警长）',
+      '摸到加拿大鹅/网红尸体：说明凶手是专业杀手或特殊鸭',
+      '摸到侦探/警长尸体：说明刺客/大祭司已经狙杀过一次',
+    ],
+    advanced:[
+      '两具尸体并排：可能是忍者双杀，锁定忍者嫌疑',
+      '摸到中立角色尸体：推断中立势力行动状态',
+    ],
+    avoid:['不要在嫌疑人面前孤身摸尸（容易被刀）','不要漏报查到的身份信息'],
+    speech:'我殡仪员，摸了 XX 尸体是侦探，刺客已经出刀了，大家注意',
+    synergy:'与通灵者配合：通灵者报死亡数，殡仪员确认死者身份',
+    counter:'被专业杀手刀时无尸体（踩到才报警），需适应这种情况',
+    stats:{难度:'★☆☆', 攻击性:'无', 信息量:'高'},
+  },
+  {
+    id:'imitator', name:'模仿者', faction:'goose', factionLabel:'鹅阵营', emoji:'🎭',
+    role:'双面间谍 · 潜伏情报',
+    win:'与鹅阵营共同获胜',
+    skill:'在鸭视角中显示为红名队友；可钻通风管道',
+    cooldown:'管道冷却20秒',
+    mobile:'点击管道图标钻管；主动接近鸭队混入信任',
+    core:[
+      '混入鸭群，获取鸭队刀人计划和目标名单',
+      '钻管跟随鸭行动，会议时报告具体鸭的位置和计划',
+      '不要参与刀人，保持伪装直到收集到足够情报',
+    ],
+    advanced:[
+      '跟着鸭队钻管可了解下一刀目标',
+      '听到刀人计划后立刻钻管离开，下一回合会议报告',
+    ],
+    avoid:['不要跟鸭一起行动到刀人现场（可能被误认为鸭）','不要在鹅面前钻管（会暴露能力）','发言需谨慎，避免泄露潜伏信息'],
+    speech:'我模仿者，混入鸭队了解情报：XX 是鸭，下一轮计划刀 XX',
+    synergy:'与警长/正义联动：模仿者确认鸭身份，警长/正义出刀',
+    counter:'若被鸭队发现真实身份会立刻被刀',
+    stats:{难度:'★★★', 攻击性:'无', 信息量:'极高'},
+  },
+  {
+    id:'celebrity', name:'网红', faction:'goose', factionLabel:'鹅阵营', emoji:'⭐',
+    role:'报警陷阱 · 死亡警报',
+    win:'与鹅阵营共同获胜',
+    skill:'死亡时所有鹅玩家收到警报；专业杀手刀也会触发',
+    cooldown:'被动，无冷却',
+    mobile:'主动单走引狼；被刀后全场鹅收到警报，队友锁定附近可疑人',
+    core:[
+      '吸引鸭来刀，触发全场警报帮助队友锁定凶手',
+      '被刀时警报发出，队友应立刻注意附近跑动的人',
+      '即使被专业杀手刀，警报同样触发（加拿大鹅做不到这点）',
+    ],
+    advanced:[
+      '与加拿大鹅配合：两人轮流引狼，触发不同机制',
+      '配合观鸟者效果极佳：观鸟者蹲守看附近人，网红被刀即可锁定',
+    ],
+    avoid:['不要与警长同行（警长刀自己会双死且触发警报乱场）','不要被鹈鹕吞走（吞走不触发警报）'],
+    speech:'我网红，单走引狼；若我死，大家看我附近跑动的人',
+    synergy:'观鸟者+网红组合是最佳引狼锁凶搭档',
+    counter:'鹈鹕吞走无法触发警报，需注意',
+    stats:{难度:'★★☆', 攻击性:'无', 信息量:'高'},
+  },
+  {
+    id:'gravy', name:'肉汁', faction:'goose', factionLabel:'鹅阵营', emoji:'🍖',
+    role:'抱团无敌 · 赏金积累',
+    win:'与鹅阵营共同获胜',
+    skill:'只有在单独与某人相处时才能被刀；做任务积累赏金，被刀则赏金归杀手',
+    cooldown:'无',
+    mobile:'全程抱团做任务；若有人想单独拉走立刻拒绝',
+    core:[
+      '只要有第三人在场就无法被刀，抱团=无敌',
+      '若有人执意要单独跟你走，可高度怀疑其为鸭',
+      '积累赏金对鹅阵营有额外胜利加成',
+    ],
+    advanced:[
+      '故意靠近嫌疑人，若对方试图把你拉离人群可直接指认',
+      '多人任务区是最安全的地点',
+    ],
+    avoid:['任何情况不要单独与陌生人行走','不要跟随只有自己一人陪同的玩家走向偏僻区域'],
+    speech:'我肉汁，全程要抱团；刚才 XX 试图带我单走，狼面极大',
+    synergy:'与保镖配合效果最佳，保镖绑定肉汁可进一步强化保护',
+    counter:'唯一克制是诱骗肉汁单独离队，鸭需要时间耐心等待机会',
+    stats:{难度:'★☆☆', 攻击性:'无', 信息量:'低'},
+  },
+  {
+    id:'engineer', name:'工程师', faction:'goose', factionLabel:'鹅阵营', emoji:'🔧',
+    role:'通道快手 · 任务加速',
+    win:'与鹅阵营共同获胜',
+    skill:'可钻通风管道快速移动；鸭破坏时小地图显示破坏范围',
+    cooldown:'管道冷却20秒',
+    mobile:'点击管道图标钻管；破坏发生时查看小地图报位置',
+    core:[
+      '快速转移、躲刀、修紧急任务',
+      '钻管是最佳逃生手段，被追时立刻钻管',
+      '破坏发生时，利用小地图报出破坏位置帮助全队',
+    ],
+    advanced:[
+      '提前规划管道路线，做任务时选最优路径',
+      '发现破坏范围可以提前通报，队友做好准备',
+    ],
+    avoid:['不要在鹅面前钻管（会引发误解）','不要长时间停留在管道中'],
+    speech:'我工程师，钻管到 XX 修任务；破坏在 XX 区域',
+    synergy:'超能力者+工程师：一个关破坏一个快速修复',
+    counter:'关灯时管道内无法分辨是鸭还是工程师，需提前说明',
+    stats:{难度:'★★☆', 攻击性:'无', 信息量:'中'},
+  },
+  {
+    id:'bodyguard', name:'保镖', faction:'goose', factionLabel:'鹅阵营', emoji:'🛡️',
+    role:'专属守护 · 替死为荣',
+    win:'所绑定目标存活到游戏最后，与鹅阵营同胜',
+    skill:'开局绑定1名玩家；可替其挡刀（保镖代替目标死亡）',
+    cooldown:'无',
+    mobile:'开局找绑定目标全程贴身；有人出刀时挡在前面',
+    core:[
+      '贴身保护绑定目标，目标存活=自己也获胜',
+      '当有人对目标出刀时，保镖站在其前面即可自动挡刀',
+      '挡刀后立刻报身份，引导队友投票',
+    ],
+    advanced:[
+      '优先绑定侦探/警长等高价值鹅',
+      '不必暴露绑定关系，让鸭不知道保护链',
+    ],
+    avoid:['不要擅自离开目标','误挡到鸭的刀会造成自己无谓牺牲'],
+    speech:'我保镖，绑定 XX；任何人刀他，我代为承受',
+    synergy:'绑定警长/侦探等核心鹅让信息链持续运作',
+    counter:'若绑定目标被鹈鹕吞走，保镖无法替挡',
+    stats:{难度:'★★☆', 攻击性:'无', 信息量:'低'},
+  },
+  {
+    id:'astral', name:'星界使者', faction:'goose', factionLabel:'鹅阵营', emoji:'✨',
+    role:'灵魂侦察 · 穿墙游走',
+    win:'与鹅阵营共同获胜',
+    skill:'可灵魂出窍（穿墙移动侦察）；出窍时本体静止，视野呈灰色仅能听声音',
+    cooldown:'冷却20秒，持续8秒',
+    mobile:'点击星界图标出窍；本体提前躲好墙角或桌下',
+    core:[
+      '灵魂远程侦察管道口和高危区域',
+      '出窍前把本体藏好，防止被刀',
+      '灵魂归位后立刻报告侦察到的信息',
+    ],
+    advanced:[
+      '出窍时听声音辨别脚步方向，无法出刀时也能感知威胁',
+      '配合观鸟者可以覆盖全图视野',
+    ],
+    avoid:['出窍时本体绝对不能暴露在空旷处','不要长时间出窍，本体会成为活靶子'],
+    speech:'我星界使者，灵魂看到 XX 在 XX 区域刀人，确认鸭身份',
+    synergy:'与观鸟者形成远程侦察搭档',
+    counter:'本体是最大弱点，鸭可趁出窍时刀本体',
+    stats:{难度:'★★★', 攻击性:'无', 信息量:'极高'},
+  },
+  {
+    id:'avenger', name:'复仇者', faction:'goose', factionLabel:'鹅阵营', emoji:'⚡',
+    role:'目击反杀 · 瞬间正义',
+    win:'与鹅阵营共同获胜',
+    skill:'目睹谋杀发生后短时间内，获得一次刀人机会，可直接反杀凶手',
+    cooldown:'目击触发，限时使用',
+    mobile:'看到刀人后，立刻点击刀人图标反杀',
+    core:[
+      '目击刀人后立刻出手，打鸭措手不及',
+      '反杀成功后报告身份，引导队友信任',
+      '残局时守在高危区域提高目击概率',
+    ],
+    advanced:[
+      '故意在管道口附近等，鸭经常从管道出来刀人',
+      '若目击了但手慢，下一会议有情报，仍然有价值',
+    ],
+    avoid:['不要误刀好人（引发负面效果）','不要错过反杀时机（冷却结束就失效）'],
+    speech:'我复仇者，目击 XX 刀人后立刻反杀，已确认其为鸭',
+    synergy:'与加拿大鹅/网红配合：目击陷阱被触发立刻反杀',
+    counter:'无主动出击能力，依赖目击，若鸭刀得隐蔽则无效',
+    stats:{难度:'★★★', 攻击性:'高（被动触发）', 信息量:'中'},
+  },
+  {
+    id:'superpower', name:'超能力者', faction:'goose', factionLabel:'鹅阵营', emoji:'🌩️',
+    role:'破坏克星 · 紧急关断',
+    win:'与鹅阵营共同获胜',
+    skill:'可强制关闭鸭的破坏行为（关灯/关门/炸弹等）',
+    cooldown:'约30秒',
+    mobile:'鸭破坏一触发，立刻点击超能力图标强制关断',
+    core:[
+      '优先关断关灯（保住视野）和炸弹（防批量死亡）',
+      '关断成功后报告，队友无需分心应对破坏',
+      '不暴露太早，让鸭以为破坏有效才能更好控场',
+    ],
+    advanced:[
+      '统计鸭的破坏CD规律，精准掐断每次尝试',
+      '关灯被断后，鸭通常会改变刀人区域，提前预判',
+    ],
+    avoid:['不要暴露太早被刺客狙（超能力者是关键鹅）','不要错过炸弹关断时机'],
+    speech:'我超能力者，刚关掉关灯；鸭下次破坏我继续断',
+    synergy:'与工程师配合：工程师快速钻管修复，超能力者防止破坏影响',
+    counter:'超能力有冷却，连续破坏可能超出关断频率',
+    stats:{难度:'★★☆', 攻击性:'无', 信息量:'中'},
+  },
+  {
+    id:'adventurer', name:'冒险家', faction:'goose', factionLabel:'鹅阵营', emoji:'🏔️',
+    role:'危险区探路 · 环境免疫',
+    win:'与鹅阵营共同获胜',
+    skill:'免疫环境杀（落石/毒气/岩浆等）',
+    cooldown:'无',
+    mobile:'优先进危险区域做任务；被追时往危险区跑',
+    core:[
+      '探索高危任务区，帮队友提前清理危险路线',
+      '被追时可往危险区跑，普通鸭会死，冒险家不受影响',
+      '环境免疫不等于刀免疫，仍需保持警觉',
+    ],
+    advanced:[
+      '提前清理危险区让队友安全跟进做任务',
+      '配合追踪者，让追踪者追踪冒险家进危险区探查',
+    ],
+    avoid:['别以为免疫环境杀就无敌，鸭出刀一样会死','危险区做任务时注意鸭的追踪'],
+    speech:'我冒险家，在危险区做任务没事；大家可以安全过来',
+    synergy:'与工程师配合，冒险家探路工程师快速钻管跟进',
+    counter:'环境免疫仅对地图环境有效，鸭的刀和特殊技能不受影响',
+    stats:{难度:'★☆☆', 攻击性:'无', 信息量:'低'},
+  },
+  {
+    id:'tracker', name:'追踪者', faction:'goose', factionLabel:'鹅阵营', emoji:'🧭',
+    role:'全图追踪 · 方向锁定',
+    win:'与鹅阵营共同获胜',
+    skill:'追踪1名玩家，显示方向箭头；目标被鹈鹕吞走则自动转追鹈鹕',
+    cooldown:'开局无，使用后3秒，可频繁切换目标',
+    mobile:'点击追踪图标，再点击目标；箭头全程实时显示',
+    core:[
+      '追踪单走者或嫌疑人，全程掌握其位置',
+      '目标失踪且箭头突然转向 = 被鹈鹕吞，立刻追踪鹈鹕位置',
+      '可连续追踪多人获取多条情报线',
+    ],
+    advanced:[
+      '追踪加拿大鹅配合引狼效果极佳',
+      '追踪鹈鹕确认后通知警长/正义使者出刀',
+    ],
+    avoid:['不要追踪已确认的好人（浪费资源）','漏报箭头方向会导致情报无效'],
+    speech:'我追踪者，追踪 XX，箭头指向北方管道区；XX 失踪，鹈鹕在 XX',
+    synergy:'与通灵者配合：通灵者发现死亡数异常，追踪者锁定鹈鹕',
+    counter:'鸭钻管道可短暂脱离追踪箭头，但无法彻底摆脱',
+    stats:{难度:'★★☆', 攻击性:'无', 信息量:'极高'},
+  },
+
+  // ── 鸭阵营 ──
+  {
+    id:'duck_basic', name:'食鸟鸭', faction:'duck', factionLabel:'鸭阵营', emoji:'🦆',
+    role:'基础鸭 · 刀人+清场',
+    win:'消灭鹅阵营所有成员（或使坏人数量≥好人数量）',
+    skill:'可刀人并钻管道；每局可吃1具尸体（站在尸体旁3秒）清理现场',
+    cooldown:'刀人17秒；拉铃后20秒',
+    mobile:'点击刀人图标出刀；刀后点击吃尸图标清理',
+    core:[
+      '刀人后立刻吃尸，隐藏犯罪现场减少报警概率',
+      '优先刀单走者、关键鹅（侦探/警长/加拿大鹅）',
+      '会议假装正常好人，提供合理路线',
+    ],
+    advanced:[
+      '刀前先确认有没有观鸟者/星界使者在附近',
+      '刀加拿大鹅会自动报警，要交给专业杀手处理',
+      '吃网红尸体会触发全场警报，坚决不碰',
+    ],
+    avoid:['不刀加拿大鹅（自动报警）','不吃网红尸体（全鹅警报）','不在人多处行动'],
+    speech:'我全程在 XX 做任务，和 XX 一起；票外置位，不要犹豫',
+    synergy:'与专业杀手搭档：专杀负责无声减员，食鸟鸭吃尸清场',
+    counter:'侦探、观鸟者、星界使者都是主要威胁',
+    stats:{难度:'★☆☆', 攻击性:'高', 信息量:'无'},
+  },
+  {
+    id:'pro_killer', name:'专业杀手', faction:'duck', factionLabel:'鸭阵营', emoji:'🗡️',
+    role:'隐刀流 · 无痕杀手',
+    win:'与鸭阵营共同获胜',
+    skill:'刀人后无尸体（只有被踩到才报警）；刀加拿大鹅不触发报警',
+    cooldown:'同基础鸭',
+    mobile:'点击刀人图标出刀；刀后立刻离开，绝对不踩自己的尸体',
+    core:[
+      '无尸体 = 无直接证据，会议时最难被锁定',
+      '加拿大鹅克星：刀加拿大鹅不触发报警，是唯一能无声处理它的鸭',
+      '刀完立刻离开，别在案发地附近徘徊',
+    ],
+    advanced:[
+      '刀完去任务点假装做任务，制造不在场证明',
+      '被殡仪员摸尸后无尸体这一特征会暴露，需提前准备说辞',
+    ],
+    avoid:['不要在有观鸟者/星界使者的区域出刀','不要被复仇者目击'],
+    speech:'我在 XX 做任务，没见到异常；XX 无故失踪，是狼刀的',
+    synergy:'与刺客配合：专杀减员，刺客会议狙杀关键鹅',
+    counter:'观鸟者、星界使者即使看不到尸体也能看到刀人动作',
+    stats:{难度:'★★☆', 攻击性:'极高', 信息量:'无'},
+  },
+  {
+    id:'invis_duck', name:'隐形鸭', faction:'duck', factionLabel:'鸭阵营', emoji:'👻',
+    role:'隐身刺客 · 奇袭专家',
+    win:'与鸭阵营共同获胜',
+    skill:'可短暂隐形（约8秒）；隐形中可出刀，但视野受限',
+    cooldown:'隐形+刀人共享25秒',
+    mobile:'点击隐形图标开启；关灯后在隐形状态下偷袭落单鹅',
+    core:[
+      '关灯配合隐形：关灯后隐身接近目标出刀，制造不在场证明',
+      '隐形=偷袭，快速出刀后离开，让人找不到凶手',
+      '会议时说自己在某处但没动，虚假不在场证明',
+    ],
+    advanced:[
+      '隐形时接近管道口，鹅不知道管道里是鸭还是工程师',
+      '与关灯技能联动，最大化视野干扰效果',
+    ],
+    avoid:['不要在抱团情况下隐形出刀（目击者多）','隐形时别走直线，路径会给有心人推断'],
+    speech:'关灯时我在 XX 待机，没动；是另一只鸭刀的',
+    synergy:'与爆炸王配合：爆炸王制造混乱，隐形鸭趁机出刀',
+    counter:'复仇者若目击隐形中的刀人行为，仍然可以反杀',
+    stats:{难度:'★★☆', 攻击性:'高', 信息量:'无'},
+  },
+  {
+    id:'morphling', name:'变形者', faction:'duck', factionLabel:'鸭阵营', emoji:'🎪',
+    role:'伪装嫁祸 · 甩锅大师',
+    win:'与鸭阵营共同获胜',
+    skill:'可变成其他玩家的外观（约15秒）；变身后可刀人',
+    cooldown:'约30秒',
+    mobile:'点击变形图标，再点击目标变装；刀人时变成某个置位好人的外观',
+    core:[
+      '变成好人外观出刀，会议时被目击者错误指认好人为凶手',
+      '嫁祸是核心策略，变成侦探/警长外观刀人后，队友发现"侦探刀了人"',
+      '会议发言："我看到 XX 刀人了"（但XX其实是变形者的变身外观）',
+    ],
+    advanced:[
+      '变完后要注意外观持续时间，变形结束前快速归位队友中',
+      '不要变队友外观（会引发误解和对比）',
+    ],
+    avoid:['不要被侦探查验（恶魔标直接暴露）','不要变形时间太长（容易在恢复原形时被发现）'],
+    speech:'我全程抱团，看到 XX（被变身对象）刀人，他是狼，全票',
+    synergy:'与刺客联动：变形者嫁祸好人，刺客再狙杀真正的侦探',
+    counter:'侦探是天敌：查到变形者恶魔标且当局没有尸体，对不上行踪',
+    stats:{难度:'★★★', 攻击性:'高', 信息量:'无'},
+  },
+  {
+    id:'bomber', name:'爆炸王', faction:'duck', factionLabel:'鸭阵营', emoji:'💣',
+    role:'炸弹传递 · 混乱制造',
+    win:'与鸭阵营共同获胜',
+    skill:'可丢出炸弹给指定玩家（可传递）；倒计时结束炸死当前持有者',
+    cooldown:'约25秒',
+    mobile:'点击炸弹图标丢给目标；观察炸弹传递情况',
+    core:[
+      '传炸弹制造减员：给落单鹅，让其在短时间内没法转移炸弹',
+      '制造混乱：炸弹传递让全场开始互相怀疑',
+      '不要持有自己的炸弹，立刻转移',
+    ],
+    advanced:[
+      '丢炸弹给侦探/警长等关键鹅，逼其减少行动',
+      '炸弹可以连续传递，让鹅互相炸',
+    ],
+    avoid:['不要炸到队友','不要被复仇者目击后炸'],
+    speech:'我没炸弹；XX 传给我炸弹，他是爆炸王，快票他',
+    synergy:'与隐形鸭配合：爆炸王制造混乱，隐形鸭趁乱出刀',
+    counter:'超能力者可关断炸弹（直接无效化爆炸王的破坏）',
+    stats:{难度:'★★☆', 攻击性:'中', 信息量:'无'},
+  },
+  {
+    id:'assassin', name:'刺客', faction:'duck', factionLabel:'鸭阵营', emoji:'🎯',
+    role:'会议狙杀 · 关键清除',
+    win:'与鸭阵营共同获胜',
+    skill:'会议阶段可狙杀1名玩家；猜对目标身份则目标死，猜错则自己死',
+    cooldown:'每局仅1次',
+    mobile:'会议时点击狙杀图标，选择目标并输入猜测的身份',
+    core:[
+      '优先狙关键鹅：侦探（情报来源）、警长（攻击力）、加拿大鹅（报警机制）',
+      '听发言判断身份：主动报身份、提供精确路线的人大概率是对应角色',
+      '狙杀前要有把握，猜错自己死等于2换1亏本',
+    ],
+    advanced:[
+      '残局时狙杀胜率更高（人少、信息更明显）',
+      '不要狙大白鹅或肉汁（这两者免疫狙杀）',
+      '配合队友情报，让队友侦察好人身份后告诉刺客',
+    ],
+    avoid:['猜错身份自己死，宁可不用也不能乱猜','不狙大白鹅/肉汁（免疫）'],
+    speech:'我狙杀了 XX，猜他是侦探，成功；现在信息线断了',
+    synergy:'与变形者配合：变形者嫁祸好人，刺客精确狙杀真正的关键鹅',
+    counter:'大白鹅和肉汁完全免疫，需跳过这两个目标',
+    stats:{难度:'★★★', 攻击性:'极高', 信息量:'高'},
+  },
+  {
+    id:'ninja', name:'忍者', faction:'duck', factionLabel:'鸭阵营', emoji:'🥷',
+    role:'双杀爆发 · 瞬间减员',
+    win:'与鸭阵营共同获胜',
+    skill:'可同时对2名相邻玩家出刀（近距离）；刀人CD更短',
+    cooldown:'约12秒（普通鸭17秒）；拉铃后15秒',
+    mobile:'贴近2名目标，点击刀人图标同时出刀',
+    core:[
+      '双杀是核心，一次减少2名鹅；配合关灯效果翻倍',
+      '找抱团的2个鹅一起刀，防止其中一个变成复仇者触发',
+      '刀人CD短，可快速连续出手',
+    ],
+    advanced:[
+      '选择2个都不是复仇者的目标，降低被反杀风险',
+      '刀完立刻钻管逃离现场',
+    ],
+    avoid:['不要刀队友','不要被复仇者目击（一次目击=一次反杀）'],
+    speech:'双杀是 XX 干的，忍者；我全程在 XX 做任务没动',
+    synergy:'与爆炸王配合：爆炸王制造混乱，忍者趁乱双杀',
+    counter:'复仇者是最大威胁，目击双杀立刻反杀',
+    stats:{难度:'★★☆', 攻击性:'极高', 信息量:'无'},
+  },
+  {
+    id:'spy', name:'间谍', faction:'duck', factionLabel:'鸭阵营', emoji:'👁️',
+    role:'投票监控 · 控场大师',
+    win:'与鸭阵营共同获胜',
+    skill:'投票阶段可查看其他玩家的投票对象',
+    cooldown:'无',
+    mobile:'投票时点击间谍图标查看所有人的票向',
+    core:[
+      '掌握投票信息=控场：引导票型保护队友鸭',
+      '看到大多数人票某鸭队友时，带动其他票向转移',
+      '发现有鹅孤立票某鸭，可以重点盯防该鹅是否有情报',
+    ],
+    advanced:[
+      '会议时假装根据发言投票，实际上根据看到的票型调整',
+      '引导鹅互相投票，制造内讧',
+    ],
+    avoid:['不要暴露自己能看投票的能力','不要在投票阶段做出明显异常操作'],
+    speech:'大家跟我投 XX，他是狼；没有异议吧（实际上看了票型保护队友）',
+    synergy:'与刺客配合：间谍获取鹅的信息，刺客精准狙杀',
+    counter:'鹅阵营很难发现间谍存在，但发言可能暴露引导行为',
+    stats:{难度:'★★☆', 攻击性:'中（控场）', 信息量:'高'},
+  },
+  {
+    id:'party_duck', name:'派对鸭', faction:'duck', factionLabel:'鸭阵营', emoji:'🎉',
+    role:'禁言搅局 · 会议干扰',
+    win:'与鸭阵营共同获胜',
+    skill:'可让目标玩家短暂失声（约10秒，无法发言）',
+    cooldown:'约20秒',
+    mobile:'会议时点击禁言图标，选择目标禁言',
+    core:[
+      '禁言关键报信者：侦探（无法报查验结果）、警长（无法报刀人信息）',
+      '搅乱会议节奏，让鹅无法完整表达信息',
+      '禁言后趁混乱引导错误投票',
+    ],
+    advanced:[
+      '残局禁言可以让鹅无法协调防守',
+      '禁言时机：侦探刚要说"恶魔标"时立刻禁言',
+    ],
+    avoid:['不要禁言队友鸭','暴露太早（发言被记住）容易被锁定'],
+    speech:'XX 没有说话，他是狼；我禁言了他，证明我是好人（反向甩锅）',
+    synergy:'与刺客配合：禁言侦探，刺客趁机狙杀无法说话的目标',
+    counter:'禁言时间短，鹅可以等禁言结束再发言，影响有限',
+    stats:{难度:'★★☆', 攻击性:'中（控场）', 信息量:'无'},
+  },
+  {
+    id:'hitman', name:'雇佣杀手', faction:'duck', factionLabel:'鸭阵营', emoji:'💰',
+    role:'精准暗杀 · 任务驱动',
+    win:'与鸭阵营共同获胜',
+    skill:'刀人无CD，但只能刀系统指定的特定目标',
+    cooldown:'无CD（仅限指定目标）',
+    mobile:'查看系统指定的目标，找到机会出刀',
+    core:[
+      '专注刀指定目标，不要节外生枝刀其他人',
+      '刀完目标后抱团，降低嫌疑',
+      '无CD的优势是可以在最佳时机连续出手',
+    ],
+    advanced:[
+      '目标若在抱团区域，等待其单独离队时出手',
+      '刀完立刻做任务，制造不在场证明',
+    ],
+    avoid:['不要刀错目标（刀了不是系统指定的人无效且暴露）'],
+    speech:'我全程做任务；XX 是狼，有线索支持，大家投他',
+    synergy:'与变形者配合：雇佣杀手刀完目标，变形者嫁祸',
+    counter:'追踪者追踪雇佣杀手可以全程掌握其位置',
+    stats:{难度:'★☆☆', 攻击性:'极高', 信息量:'无'},
+  },
+  {
+    id:'high_priest', name:'大祭司', faction:'duck', factionLabel:'鸭阵营', emoji:'🧙',
+    role:'仪式狙杀 · 会议威胁',
+    win:'与鸭阵营共同获胜',
+    skill:'与刺客相同：会议阶段狙杀1人，猜对目标身份则目标死，猜错则自己死',
+    cooldown:'每局1次',
+    mobile:'会议时点击狙杀图标操作，同刺客',
+    core:[
+      '优先狙杀关键鹅（侦探/警长），打断信息链',
+      '听发言特征判断身份，说话越具体越可能是对应角色',
+      '残局使用成功率更高，因为人少信息更明显',
+    ],
+    advanced:[
+      '与刺客同时存在时配合使用（一个狙，另一个保留备用）',
+      '不狙大白鹅/肉汁（免疫），浪费唯一机会',
+    ],
+    avoid:['猜错必死，宁可不用','不狙大白鹅和肉汁'],
+    speech:'与刺客发言策略相同，混淆鹅阵营的判断',
+    synergy:'与刺客一起双狙，一局可以消灭2个关键鹅',
+    counter:'大白鹅免疫，肉汁免疫',
+    stats:{难度:'★★★', 攻击性:'极高', 信息量:'高'},
+  },
+  {
+    id:'serial_killer', name:'连环杀手', faction:'duck', factionLabel:'鸭阵营', emoji:'🩸',
+    role:'残局收割 · 连锁爆发',
+    win:'与鸭阵营共同获胜',
+    skill:'刀人后CD立刻重置，可连续出刀；每次刀人后位置短暂暴露',
+    cooldown:'刀人后重置，约10秒',
+    mobile:'点击刀人图标连续出刀；刀后立刻钻管逃跑',
+    core:[
+      '残局（剩3-4人）爆发连刀，快速清场',
+      '每次刀人后暴露位置，刀完必须立刻钻管',
+      '位置暴露是致命弱点，用钻管和地形抵消',
+    ],
+    advanced:[
+      '与队友配合：队友制造混乱，连环杀手趁乱连刀',
+      '早期潜伏，残局才露出爪牙',
+    ],
+    avoid:['不要在非残局过早使用连刀（每次暴露位置，前期风险极高）','不要被复仇者目击'],
+    speech:'我没刀人；XX 是连环杀手，刚才位置暴露了',
+    synergy:'与爆炸王/忍者配合：前期减员，连环杀手残局收割',
+    counter:'刀人后位置暴露，追踪者+警长联动可锁定',
+    stats:{难度:'★★☆', 攻击性:'极高', 信息量:'无'},
+  },
+
+  // ── 中立阵营 ──
+  {
+    id:'pelican', name:'鹈鹕', faction:'neutral', factionLabel:'中立阵营', emoji:'🦢',
+    role:'吞噬者 · 独自称霸',
+    win:'吞到只剩"鹈鹕+2人"时触发鹈鹕时刻，倒计时结束后获胜',
+    skill:'无刀人；可吞人（被吞者会议前不死，会议后死亡）；被刀则肚子里的人存活',
+    cooldown:'吞人约25秒',
+    mobile:'点击吞人图标吞落单者；藏偏僻角落或管道',
+    core:[
+      '偷偷吞人，不要让人发现异常（吞了人但数量减少可能被通灵者察觉）',
+      '吞人后藏好等下一轮会议结束，被吞者此时死亡',
+      '触发鹈鹕时刻后，躲在安全角落等倒计时',
+    ],
+    advanced:[
+      '通灵者是主要威胁，失踪人数与死亡数不符会暴露',
+      '被警长/正义刀后肚子里的人获救，需优先躲避',
+      '追踪者追踪后会转向鹈鹕，需防范追踪者',
+    ],
+    avoid:['不要吞加拿大鹅（被普通鸭刀后会触发报警）','不要被警长/正义刀','不要在人多区域行动'],
+    speech:'我全程抱团，没看到异常；XX 突然失踪，可能被狼刀了（伪装好人）',
+    synergy:'独自行动，不与任何阵营合作',
+    counter:'通灵者+追踪者是最强克制组合；警长/正义使者可直接刀',
+    stats:{难度:'★★★', 攻击性:'中（吞噬）', 信息量:'无'},
+  },
+  {
+    id:'falcon', name:'猎鹰', faction:'neutral', factionLabel:'中立阵营', emoji:'🦅',
+    role:'全场通杀 · 孤狼猎手',
+    win:'独自淘汰所有其他玩家获胜',
+    skill:'可刀人；CD极短（约10秒）',
+    cooldown:'刀人约10秒，拉铃后12秒',
+    mobile:'点击刀人图标快速出刀；单走刀所有人',
+    core:[
+      '不依赖任何阵营，谁都杀，快速减员',
+      '残局收割能力极强，CD短可连续出手',
+      '表面伪装为鹅，实际暗中减员',
+    ],
+    advanced:[
+      '初期观察势力，后期选择最弱一边先清理',
+      '不与任何人抱团，避免被侦探查到行迹',
+    ],
+    avoid:['被警长/正义使者刀后即淘汰','被复仇者目击后反杀'],
+    speech:'我是好人；XX 是狼，我们快投他（迷惑所有人）',
+    synergy:'无队友，独自行动',
+    counter:'警长是最大克制，警长可无限刀且刀猎鹰无惩罚',
+    stats:{难度:'★★★', 攻击性:'极高', 信息量:'无'},
+  },
+  {
+    id:'dove', name:'鸽子', faction:'neutral', factionLabel:'中立阵营', emoji:'🕊️',
+    role:'感染传播 · 瞬间获胜',
+    win:'同一回合内感染所有存活玩家（优先级最高的胜利条件）',
+    skill:'可感染玩家；同一回合感染所有存活玩家则直接获胜；感染CD随存活人数减少',
+    cooldown:'开局约20秒，人数越少CD越短',
+    mobile:'点击感染图标贴近目标传播；优先贴落单者',
+    core:[
+      '悄悄感染，不要让人发现感染动作',
+      '一回合全感染是直接胜利，优先级高于其他所有胜利条件',
+      '人越少CD越短，残局时感染速度极快',
+    ],
+    advanced:[
+      '人多时先感染偏僻处的散落鹅，残局再批量感染',
+      '假装做任务，接近目标时顺便感染',
+    ],
+    avoid:['被刀必死（无任何防御）','被复仇者目击感染动作后反杀'],
+    speech:'我全程跟大家一起，没动；XX 单走，行为可疑是狼',
+    synergy:'独自行动，不依赖其他人',
+    counter:'警长/正义可以刀；追踪者追踪鸽子可以暴露',
+    stats:{难度:'★★★', 攻击性:'无（感染）', 信息量:'无'},
+  },
+  {
+    id:'vulture', name:'秃鹫', faction:'neutral', factionLabel:'中立阵营', emoji:'🦃',
+    role:'食腐者 · 收集尸体',
+    win:'吃够指定数量的尸体（约3-5具）获胜',
+    skill:'可吃尸体获胜；小地图有箭头指向最近的尸体位置',
+    cooldown:'吃尸约15秒',
+    mobile:'按照箭头方向寻找尸体；到达尸体旁点击吃尸图标',
+    core:[
+      '跟着战场走：鸭刀得多的地方尸体越多',
+      '快速移动到尸体位置，在被踩踏报警前吃掉',
+      '避免暴露自己在频繁接触尸体',
+    ],
+    advanced:[
+      '追踪刀人节奏，预判下一具尸体位置',
+      '鸭和秃鹫有时利益一致（鸭杀人，秃鹫吃尸），可互相配合但非盟友',
+    ],
+    avoid:['被警长/正义误刀（秃鹫是独立中立）','吃尸动作被目击后被误认为鸭'],
+    speech:'我在找任务；XX 是狼，刀了好几个人（利用信息获取下一具尸体位置）',
+    synergy:'独自行动',
+    counter:'专业杀手无尸体使秃鹫找不到目标，是软克制',
+    stats:{难度:'★★☆', 攻击性:'无（食腐）', 信息量:'无'},
+  },
+  {
+    id:'dueling_goose', name:'决斗呆呆鸟', faction:'neutral', factionLabel:'中立阵营', emoji:'⚔️',
+    role:'求死艺术 · 决斗一战',
+    win:'刀死另一只决斗呆呆鸟后，被会议投票出局',
+    skill:'完成3个假任务后获得刀人能力；只能刀另一只决斗呆呆鸟；刀死后被投票出局才算赢',
+    cooldown:'假任务完成后获得，刀人约15秒CD',
+    mobile:'先做3个假任务；找到对手出刀；刀后主动聊爆引导票出自己',
+    core:[
+      '先完成假任务获得刀人能力，再找到对手决斗',
+      '刀死对手后，在会议主动暴露求票（"我是狼，票我"）',
+      '被票出局才是最终胜利，不被票就不算赢',
+    ],
+    advanced:[
+      '找到对手方向：听发言中有无其他求死行为或奇怪言论',
+      '刀完对手后的发言要果断引导全票，不能含糊',
+    ],
+    avoid:['不要刀错人（只能对决斗对手出刀有效）','不要被鸭乱刀死','被票太早（假任务还没完成时就出局）'],
+    speech:'我是狼，刀了 XX，大家全票投我吧',
+    synergy:'寻找另一只决斗呆呆鸟是核心任务',
+    counter:'被鹈鹕吞走或被刀死则无法完成胜利条件',
+    stats:{难度:'★★★', 攻击性:'中（决斗）', 信息量:'无'},
+  },
+  {
+    id:'goose_of_doom', name:'呆呆鸟', faction:'neutral', factionLabel:'中立阵营', emoji:'🤪',
+    role:'求票达人 · 被票即赢',
+    win:'被会议投票出局即获胜',
+    skill:'无主动技能；靠发言引导全场投自己',
+    cooldown:'无',
+    mobile:'会议时故意聊爆、划水、说反话；让大家都投自己',
+    core:[
+      '求票=唯一胜利方式，要尽快在会议中引导大家投自己',
+      '策略：故意说漏嘴、行为诡异、主动认罪',
+      '别被鸭乱刀死或被鹈鹕吞走，要死在会议上才算赢',
+    ],
+    advanced:[
+      '"主动认狼"法：直接说我是鸭，让大家不得不投',
+      '控制节奏，不要太早被票（等人多时被票出局，效果最大）',
+    ],
+    avoid:['被鸭乱刀（死在游戏中不算赢）','被鹈鹕吞走（无法被票）','被票太晚（游戏结束了还没被票）'],
+    speech:'我是狼，我不想玩了，大家全票打飞我；我开门了/我刀人了',
+    synergy:'独自行动，但可利用会议信息加速被票',
+    counter:'鸭乱刀和鹈鹕吞走是最大克制',
+    stats:{难度:'★☆☆', 攻击性:'无', 信息量:'无'},
+  },
+  {
+    id:'lovers', name:'恋人', faction:'neutral', factionLabel:'中立阵营', emoji:'💕',
+    role:'命运相连 · 共存获胜',
+    win:'与绑定的恋人共同存活到游戏最后',
+    skill:'与另1名玩家绑定；一方死亡另一方也殉情死亡',
+    cooldown:'无',
+    mobile:'开局找到绑定的恋人，全程抱团保护对方',
+    core:[
+      '两人存活=双赢；一方死则两人都输（都死）',
+      '不管鹅鸭之争，核心是保护两人的生命',
+      '抱团行动，互相保护',
+    ],
+    advanced:[
+      '若恋人是鸭，需要在鹅和鸭之间找到平衡点（不被票但也别被刀）',
+      '若恋人是鹅，正常抱团做任务即可双赢',
+    ],
+    avoid:['不要分开行动','不要被刀','不要被票出局'],
+    speech:'我们全程抱团，没有异常；XX 是狼，投他',
+    synergy:'与保镖功能类似，但保镖是单向保护，恋人是双向共存',
+    counter:'刺客/大祭司狙杀其中一人会导致双方同死',
+    stats:{难度:'★★☆', 攻击性:'无', 信息量:'无'},
+  },
+];
+
+// Render
+const section = document.getElementById('gridSection');
+const emptyState = document.getElementById('emptyState');
+
+function getFactionColor(f) {
+  return f === 'goose' ? 'var(--goose)' : f === 'duck' ? 'var(--duck)' : 'var(--neutral)';
+}
+
+function renderCards(chars) {
+  // Remove old grids
+  document.querySelectorAll('.faction-block').forEach(el => el.remove());
+  emptyState.classList.remove('show');
+
+  if (chars.length === 0) { emptyState.classList.add('show'); return; }
+
+  const factions = ['goose','duck','neutral'];
+  const labels = { goose:'🪿 鹅阵营', duck:'🦆 鸭阵营', neutral:'🐦 中立阵营' };
+
+  factions.forEach(f => {
+    const group = chars.filter(c => c.faction === f);
+    if (group.length === 0) return;
+    const block = document.createElement('div');
+    block.className = 'faction-block';
+    block.innerHTML = `<div class="section-label">${labels[f]}</div><div class="cards-grid"></div>`;
+    const grid = block.querySelector('.cards-grid');
+    group.forEach((c, i) => {
+      const card = document.createElement('div');
+      card.className = `char-card ${c.faction}`;
+      card.style.animationDelay = `${i * 0.04}s`;
+      card.innerHTML = `
+        <span class="card-emoji">${c.emoji}</span>
+        <div class="card-name">${c.name}</div>
+        <span class="card-tag">${c.factionLabel}</span>
+        <div class="card-role">${c.role}</div>
+      `;
+      card.onclick = () => openModal(c);
+      grid.appendChild(card);
+    });
+    section.insertBefore(block, emptyState);
+  });
+}
+
+// Filter & Search
+let currentFaction = 'all';
+let searchQuery = '';
+
+function applyFilters() {
+  const filtered = CHARS.filter(c => {
+    const matchFaction = currentFaction === 'all' || c.faction === currentFaction;
+    const matchSearch = c.name.includes(searchQuery) || c.role.includes(searchQuery);
+    return matchFaction && matchSearch;
+  });
+  renderCards(filtered);
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFaction = btn.dataset.faction;
+    applyFilters();
+  });
+});
+
+document.getElementById('searchInput').addEventListener('input', e => {
+  searchQuery = e.target.value.trim();
+  applyFilters();
+});
+
+// Modal
+function openModal(c) {
+  const overlay = document.getElementById('modalOverlay');
+  const modal = document.getElementById('modal');
+  const header = document.getElementById('modalHeader');
+  const body = document.getElementById('modalBody');
+
+  modal.className = `modal ${c.faction}`;
+
+  const accentColor = getFactionColor(c.faction);
+
+  header.innerHTML = `
+    <div class="modal-faction-bar"></div>
+    <div class="modal-title-row">
+      <span class="modal-emoji">${c.emoji}</span>
+      <div>
+        <div class="modal-name">${c.name}</div>
+        <div class="modal-tags">
+          <span class="modal-tag faction">${c.factionLabel}</span>
+          <span class="modal-tag win">🏆 ${c.win}</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const statEntries = Object.entries(c.stats);
+  const statsHTML = statEntries.map(([k,v]) => `
+    <div class="stat-box">
+      <div class="stat-val">${v}</div>
+      <div class="stat-name">${k}</div>
+    </div>
+  `).join('');
+
+  const coreHTML = c.core.map(t => `<li>${t}</li>`).join('');
+  const advHTML = c.advanced.map(t => `<li>${t}</li>`).join('');
+  const avoidHTML = c.avoid.map(t => `<li>${t}</li>`).join('');
+
+  body.innerHTML = `
+    <div class="section">
+      <div class="section-title"><span class="dot"></span>技能详情</div>
+      <div class="skill-block">
+        <div class="skill-label">技能效果</div>
+        ${c.skill}
+      </div>
+      <div class="skill-block">
+        <div class="skill-label">冷却时间</div>
+        ${c.cooldown}
+      </div>
+      <div class="skill-block">
+        <div class="skill-label">手机操作</div>
+        ${c.mobile}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="dot"></span>核心玩法</div>
+      <div class="stats-row">${statsHTML}</div>
+      <ul class="tip-list">${coreHTML}</ul>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="dot"></span>进阶技巧</div>
+      <ul class="tip-list">${advHTML}</ul>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="dot"></span>注意事项</div>
+      <ul class="tip-list avoid-list">${avoidHTML}</ul>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="dot"></span>配合与克制</div>
+      <div class="relation-grid">
+        <div class="relation-item">
+          <div class="rel-title">🤝 配合角色</div>
+          ${c.synergy}
+        </div>
+        <div class="relation-item">
+          <div class="rel-title">⚔️ 克制关系</div>
+          ${c.counter}
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="dot"></span>参考发言模板</div>
+      <div class="quote-box">${c.speech}</div>
+    </div>
+  `;
+
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeModalOnOverlay(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// Init
+renderCards(CHARS);
+</script>
+</body>
+</html>
